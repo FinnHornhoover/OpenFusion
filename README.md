@@ -5,24 +5,23 @@
 [![Discord](https://img.shields.io/badge/chat-on%20discord-7289da.svg?logo=discord)](https://discord.gg/DYavckB)
 [![License](https://img.shields.io/github/license/OpenFusionProject/OpenFusion)](https://github.com/OpenFusionProject/OpenFusion/blob/master/LICENSE.md)
 
-OpenFusion is a reverse-engineered server for FusionFall. It primarily targets versions `beta-20100104` and `beta-20111013` of the original game, with [limited support](https://github.com/OpenFusionProject/OpenFusion/wiki/FusionFall-Version-Support) for others.
+OpenFusion is a reverse-engineered server for FusionFall. It currently primarily targets version `beta-20100104` and has some support for version `beta-20100728` and ``beta-20111013`` of the original game.
+
+Further documentation pending.
 
 ## Usage
 
-### Getting Started
+tl;dr:
 
-1. Download the client from [here](https://github.com/OpenFusionProject/OpenFusion/releases/download/1.3/OpenFusionClient-1.3.zip).
-2. Extract it to a folder of your choice. Note: if you are upgrading from an older version, it is preferable to start with a fresh folder rather than overwriting a previous install.
-3. Run OpenFusionClient.exe - you will be given a choice between two public servers by default. Select the one you wish to play and click connect.
-4. To create an account, simply enter the details you wish to use at the login screen then click Log In. Do *not* click register, as this will just lead to a blank screen.
-5. Make a new character, and enjoy the game! Your progress will be saved automatically, and you can resume playing by entering the login details you used in step 4.
+1. Download the client+server bundle from [here](https://github.com/OpenFusionProject/OpenFusion/releases/download/1.3/OpenFusionClient-1.3.zip).
+2. Extract it to a folder of your choice.
+3. Run OpenFusionClient.exe
 
-### Hosting a server
+To host your own server:
 
-1. Grab `OpenFusionServer-1.3-original.zip` or `OpenFusionServer-1.3-academy.zip` from [here](https://github.com/OpenFusionProject/OpenFusion/releases/tag/1.3).
-2. Extract it to a folder of your choice, then run `winfusion.exe` (Windows) or `fusion` (Linux) to start the server.
-3. Add a new server to the client's list: the default port is 23000, so the full IP with default settings would be 127.0.0.1:23000.
-4. Once you've added the server to the list, connect to it and log in. If you're having trouble with this, refer to steps 4 and 5 from the previous section.
+1. Grab ``OpenFusionServer-1.3-original.zip`` or ``OpenFusionServer-1.3-academy.zip`` from [here](https://github.com/OpenFusionProject/OpenFusion/releases/tag/1.3).
+2. Extract it to a folder of your choice.
+3. Add a new server to the client: the default port is 23000, so the full IP with default settings would be 127.0.0.1:23000.
 
 If you want, [compiled binaries (artifacts) for each new commit can be found on AppVeyor.](https://ci.appveyor.com/project/OpenFusionProject/openfusion)
 
@@ -68,7 +67,7 @@ This config file also has several other options you can tweak, including log ver
 If you want to play with friends, simply enter the login server details into the `Add Server` dialogue in OpenFusionClient.
 This just works if you're all under the same LAN, but if you want to play over the internet you'll need to open a port, use a service like Hamachi or nGrok, or host the server on a VPS (just like any other gameserver).
 
-## Compiling 
+## Compiling
 
 OpenFusion has one external dependency: SQLite. You can install it on Windows using `vcpkg`, and on Unix/Linux using your distribution's package manager. For a more indepth guide on how to set up vcpkg, [read this guide on the wiki](https://github.com/OpenFusionProject/OpenFusion/wiki/Installing-SQLite-on-Windows-using-vcpkg).
 
