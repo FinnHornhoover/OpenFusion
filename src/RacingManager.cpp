@@ -151,7 +151,7 @@ void RacingManager::racingEnd(CNSocket* sock, CNPacketData* data) {
     reward.eIL = 1;
     sItemBase item;
     item.iID = rankRewards->at(rank); // rank scores and rewards line up
-    item.iType = 0;
+    item.iType = 9;
     item.iOpt = 1;
     reward.sItem = item;
 
