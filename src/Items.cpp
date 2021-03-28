@@ -7,6 +7,7 @@
 #include "Abilities.hpp"
 #include "Missions.hpp"
 #include "Eggs.hpp"
+#include "Rand.hpp"
 
 #include <string.h> // for memset()
 #include <assert.h>
@@ -129,7 +130,7 @@ static int getRarity(int crateId, int itemSetTypeId) {
     }
 
     if (rarityIndices.empty()) {
-        std::cout << "Item Set " << crate.itemSetTypeId << " has no valid items assigned?!" << std::endl;
+        std::cout << "[WARN] Item Set " << crate.itemSetTypeId << " has no valid items assigned?!" << std::endl;
         return -1;
     }
 
@@ -138,7 +139,7 @@ static int getRarity(int crateId, int itemSetTypeId) {
         relevantWeights.push_back(rarityWeights[index]);
 
     // now return a random rarity number (starting from 1)
-    return choice(relevantWeights, rand()) + 1;
+    return Rand::randWeighted(relevantWeights) + 1;
 }
 
 static int getCrateItem(sItemBase* result, int itemSetTypeId, int itemSetChanceId, int rarity, int playerGender) {
@@ -164,7 +165,7 @@ static int getCrateItem(sItemBase* result, int itemSetTypeId, int itemSetChanceI
 
         if (Items::ItemData.find(key) == Items::ItemData.end()) {
             std::cout << "[WARN] Item-Type pair (" << key.first << ", " << key.second << ") specified by droppable item "
-                      << droppableItemId << " was not found, skipping..." << std::endl;
+                        << droppableItemId << " was not found, skipping..." << std::endl;
             continue;
         }
 
@@ -203,7 +204,7 @@ static int getCrateItem(sItemBase* result, int itemSetTypeId, int itemSetChanceI
         }
     }
 
-    int chosenIndex = choice(itemWeights, rand());
+    int chosenIndex = Rand::randWeighted(itemWeights);
     DroppableItem* item = validItems[chosenIndex].second;
 
     result->iID = item->itemId;
@@ -596,7 +597,7 @@ static void chestOpenHandler(CNSocket *sock, CNPacketData *data) {
     // if we failed to open a crate, at least give the player a gumball (suggested by Jade)
     if (failing) {
         item->sItem.iType = 7;
-        item->sItem.iID = 119 + (rand() % 3);
+        item->sItem.iID = 119 + Rand::rand(3);
         item->sItem.iOpt = 1;
 
         std::cout << "[WARN] Crate open failed, giving a Gumball..." << std::endl;
@@ -711,7 +712,7 @@ static void getMobDrop(sItemBase* reward, const std::vector<int>& weights, const
 
 static void giveEventDrop(CNSocket* sock, Player* player, int rolled) {
     // random drop chance
-    if (rand() % 100 > settings::EVENTCRATECHANCE)
+    if (Rand::rand(100) > settings::EVENTCRATECHANCE)
         return;
 
     // no slot = no reward
