@@ -72,6 +72,7 @@ CXXSRC=\
 	src/Racing.cpp\
 	src/Vendor.cpp\
 	src/Trading.cpp\
+	src/Rand.cpp\
 
 # headers (for timestamp purposes)
 CXXHDR=\
@@ -114,6 +115,7 @@ CXXHDR=\
 	src/Racing.hpp\
 	src/Vendor.hpp\
 	src/Trading.hpp\
+	src/Rand.hpp\
 
 COBJ=$(CSRC:.c=.o)
 CXXOBJ=$(CXXSRC:.cpp=.o)
