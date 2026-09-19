@@ -315,11 +315,16 @@ static void vendorCombineItems(CNSocket* sock, CNPacketData* data) {
 
     sItemBase* itemStats = &plr->Inven[req->iStatItemSlot];
     sItemBase* itemLooks = &plr->Inven[req->iCostumeItemSlot];
+
+    // if item is already combined, the style item id will be in the higher 16 bits of the iOpt
+    int16_t itemNonCombinedLooksID = (itemLooks->iOpt >> 16) > 0 ? (itemLooks->iOpt >> 16) : itemLooks->iID;
+
     Items::Item* itemStatsDat = Items::getItemData(itemStats->iID, itemStats->iType);
     Items::Item* itemLooksDat = Items::getItemData(itemLooks->iID, itemLooks->iType);
+    Items::Item* itemNonCombinedLooksDat = Items::getItemData(itemNonCombinedLooksID, itemLooks->iType);
 
     // sanity check item and combination entry existence
-    if (itemStatsDat == nullptr || itemLooksDat == nullptr
+    if (itemStatsDat == nullptr || itemLooksDat == nullptr || itemNonCombinedLooksDat == nullptr
         || Items::CrocPotTable.find(abs(itemStatsDat->level - itemLooksDat->level)) == Items::CrocPotTable.end()) {
         std::cout << "[WARN] Either item ids or croc pot value set not found" << std::endl;
         sock->sendPacket(failResp, P_FE2CL_REP_PC_ITEM_COMBINATION_FAIL);
@@ -335,7 +340,8 @@ static void vendorCombineItems(CNSocket* sock, CNPacketData* data) {
     }
 
     CrocPotEntry* recipe = &Items::CrocPotTable[abs(itemStatsDat->level - itemLooksDat->level)];
-    int cost = itemStatsDat->buyPrice * recipe->multStats + itemLooksDat->buyPrice * recipe->multLooks;
+    // buy price of combined items is the uncombined style item's buy price
+    int cost = itemStatsDat->buyPrice * recipe->multStats + itemNonCombinedLooksDat->buyPrice * recipe->multLooks;
     float successChance = recipe->base / 100.0f; // base success chance
 
     // rarity gap multiplier
@@ -360,14 +366,13 @@ static void vendorCombineItems(CNSocket* sock, CNPacketData* data) {
     //std::cout << rolled << " vs " << successChance << std::endl;
     plr->subtractCapped(CappedValueType::TAROS, cost);
 
-
     INITSTRUCT(sP_FE2CL_REP_PC_ITEM_COMBINATION_SUCC, resp);
     if (rolled < successChance) {
         // success
         resp.iSuccessFlag = 1;
 
         // modify the looks item with the new stats and set the appearance through iOpt
-        itemLooks->iOpt = (int32_t)((itemLooks->iOpt) >> 16 > 0 ? (itemLooks->iOpt >> 16) : itemLooks->iID) << 16;
+        itemLooks->iOpt = (int32_t)((itemLooks->iOpt >> 16) > 0 ? (itemLooks->iOpt >> 16) : itemLooks->iID) << 16;
         itemLooks->iID = itemStats->iID;
 
         // delete stats item
