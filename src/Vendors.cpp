@@ -321,12 +321,19 @@ static void vendorCombineItems(CNSocket* sock, CNPacketData* data) {
 
     Items::Item* itemStatsDat = Items::getItemData(itemStats->iID, itemStats->iType);
     Items::Item* itemLooksDat = Items::getItemData(itemLooks->iID, itemLooks->iType);
-    Items::Item* itemNonCombinedLooksDat = Items::getItemData(itemLooksNonCombinedID, itemLooks->iType);
+    Items::Item* itemLooksNonCombinedDat = (itemLooksNonCombinedID == itemLooks->iID) ? itemLooksDat : Items::getItemData(itemLooksNonCombinedID, itemLooks->iType);
 
     // sanity check item and combination entry existence
-    if (itemStatsDat == nullptr || itemLooksDat == nullptr || itemNonCombinedLooksDat == nullptr
-        || Items::CrocPotTable.find(abs(itemStatsDat->level - itemLooksDat->level)) == Items::CrocPotTable.end()) {
-        std::cout << "[WARN] Either item ids or croc pot value set not found" << std::endl;
+    if (itemStatsDat == nullptr || itemLooksDat == nullptr || itemLooksNonCombinedDat == nullptr) {
+        std::cout << "[WARN] Item ids not found for croc pot" << std::endl;
+        sock->sendPacket(failResp, P_FE2CL_REP_PC_ITEM_COMBINATION_FAIL);
+        return;
+    }
+
+    int levelDiff = abs(itemStatsDat->level - itemLooksDat->level);
+    auto recipeIt = Items::CrocPotTable.find(levelDiff);
+    if (recipeIt == Items::CrocPotTable.end()) {
+        std::cout << "[WARN] Croc pot value set not found for level diff " << levelDiff << std::endl;
         sock->sendPacket(failResp, P_FE2CL_REP_PC_ITEM_COMBINATION_FAIL);
         return;
     }
@@ -339,9 +346,9 @@ static void vendorCombineItems(CNSocket* sock, CNPacketData* data) {
         return;
     }
 
-    CrocPotEntry* recipe = &Items::CrocPotTable[abs(itemStatsDat->level - itemLooksDat->level)];
+    CrocPotEntry* recipe = &recipeIt->second;
     // buy price of combined items is the uncombined style item's buy price
-    int cost = itemStatsDat->buyPrice * recipe->multStats + itemNonCombinedLooksDat->buyPrice * recipe->multLooks;
+    int cost = itemStatsDat->buyPrice * recipe->multStats + itemLooksNonCombinedDat->buyPrice * recipe->multLooks;
     float successChance = recipe->base / 100.0f; // base success chance
 
     // rarity gap multiplier
