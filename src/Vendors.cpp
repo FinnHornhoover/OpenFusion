@@ -317,11 +317,11 @@ static void vendorCombineItems(CNSocket* sock, CNPacketData* data) {
     sItemBase* itemLooks = &plr->Inven[req->iCostumeItemSlot];
 
     // if item is already combined, the style item id will be in the higher 16 bits of the iOpt
-    int16_t itemNonCombinedLooksID = (itemLooks->iOpt >> 16) > 0 ? (itemLooks->iOpt >> 16) : itemLooks->iID;
+    int16_t itemLooksNonCombinedID = (itemLooks->iOpt >> 16) > 0 ? (itemLooks->iOpt >> 16) : itemLooks->iID;
 
     Items::Item* itemStatsDat = Items::getItemData(itemStats->iID, itemStats->iType);
     Items::Item* itemLooksDat = Items::getItemData(itemLooks->iID, itemLooks->iType);
-    Items::Item* itemNonCombinedLooksDat = Items::getItemData(itemNonCombinedLooksID, itemLooks->iType);
+    Items::Item* itemNonCombinedLooksDat = Items::getItemData(itemLooksNonCombinedID, itemLooks->iType);
 
     // sanity check item and combination entry existence
     if (itemStatsDat == nullptr || itemLooksDat == nullptr || itemNonCombinedLooksDat == nullptr
@@ -372,7 +372,7 @@ static void vendorCombineItems(CNSocket* sock, CNPacketData* data) {
         resp.iSuccessFlag = 1;
 
         // modify the looks item with the new stats and set the appearance through iOpt
-        itemLooks->iOpt = (int32_t)((itemLooks->iOpt >> 16) > 0 ? (itemLooks->iOpt >> 16) : itemLooks->iID) << 16;
+        itemLooks->iOpt = (int32_t)itemLooksNonCombinedID << 16;
         itemLooks->iID = itemStats->iID;
 
         // delete stats item
