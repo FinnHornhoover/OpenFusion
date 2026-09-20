@@ -369,6 +369,12 @@ static void vendorCombineItems(CNSocket* sock, CNPacketData* data) {
         break;
     }
 
+#ifdef ACADEMY
+    // uncombined academy items in the style slot with level 0 have 100% success chance
+    if (itemLooksNonCombinedID == itemLooks->iID && itemLooksDat->level == 0)
+        successChance = 100.0f;
+#endif
+
     float rolled = Rand::randFloat(100.0f); // success chance out of 100
     //std::cout << rolled << " vs " << successChance << std::endl;
     plr->subtractCapped(CappedValueType::TAROS, cost);
